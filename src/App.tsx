@@ -38,10 +38,10 @@ const App = () => {
 						<ul>
 							<li className="wrap-break-words">
 								b.s.e in computer engineering <b>@</b> university of
-								pennsylvania c.o. 2027
+								pennsylvania
 							</li>
 							<li className="wrap-break-words">
-								b.s in economics, conc. finance <b>@</b> wharton c.o. 2027
+								b.s in economics, conc. finance <b>@</b> wharton
 							</li>
 						</ul>
 					</div>
@@ -50,13 +50,16 @@ const App = () => {
 						<h2 className="text-2xl font-bold">prev</h2>
 						<ul>
 							<li className="wrap-break-words">
+								asic firmware <b>@</b> google
+							</li>
+							<li className="wrap-break-words">
 								product <b>@</b> clado.ai
 							</li>
 							<li className="wrap-break-words">
 								founder <b>@</b> jaimy.ai, aqc. by clado.ai
 							</li>
 							<li className="wrap-break-words">
-								software <b>@</b> shades.news
+								backend <b>@</b> shades.news
 							</li>
 							<li className="wrap-break-words">
 								software <b>@</b> penn labs
