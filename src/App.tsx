@@ -11,7 +11,7 @@ const App = () => {
 			<div className="flex flex-col lg:flex-row gap-5 ">
 				<div className="">
 					<h2 className="wrap-break-words">
-						<b>me</b> AT <b>jdi</b> DOT <b>ng</b>
+						<b>me</b> AT <b>jeffersonding</b> DOT <b>com</b>
 					</h2>
 
 					<div className="my-4">
