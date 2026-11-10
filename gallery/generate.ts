@@ -54,11 +54,10 @@ function page(title: string, description: string, content: string) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="description" content="${escape(description)}">
-    <title>${escape(title)} / jefferson ding</title>
+    <title>${escape(title.toLowerCase())}</title>
     <link rel="stylesheet" href="${galleryUrl}style.css">
   </head>
   <body>
-    <header><a href="/">jefferson ding</a></header>
     <main>
       ${content}
     </main>
@@ -72,7 +71,7 @@ function image(photo: Photo, previewTitle?: string) {
     .map(([width, file]) => `${galleryUrl}photos/${escape(file)} ${escape(width)}w`)
     .join(', ');
   const responsive = variants ? ` srcset="${variants}" sizes="auto, (max-width: 62rem) 92vw, 58rem"` : '';
-  const alt = previewTitle ? `View ${previewTitle}` : photo.alt ?? photo.title;
+  const alt = previewTitle ? `view ${previewTitle}` : photo.alt ?? photo.title;
 
   return `<img src="${galleryUrl}photos/${escape(photo.file)}"${responsive} alt="${escape(alt)}" width="${photo.width}" height="${photo.height}" loading="lazy" decoding="async">`;
 }
@@ -108,13 +107,13 @@ const index = projects.map(project => {
   return `<article>
     <h2 class="project-title"><a href="${url}">${escape(project.title)}</a></h2>
     <p class="statement">${escape(project.artist_statement)}</p>
-    <a class="view-collection" href="${url}" aria-label="View collection: ${escape(project.title)}">View collection</a>
+    <a class="view-collection" href="${url}" aria-label="view ${escape(project.title)}">view</a>
     <a class="preview" href="${url}">${image(project.photos[0], project.title)}</a>
   </article>`;
 }).join('\n');
 
-await Bun.write(`${output}/index.html`, page('photography', 'Photography projects by Jefferson Ding.', `
-  <h1 class="visually-hidden">Photography projects</h1>
+await Bun.write(`${output}/index.html`, page('photography', 'photography projects', `
+  <h1 class="visually-hidden">photography projects</h1>
   <div class="projects">${index}</div>
 `));
 
@@ -124,13 +123,13 @@ for (const project of projects) {
     const next = index + 1 < project.photos.length ? `${galleryUrl}${photoPath(project, index + 1)}` : undefined;
 
     await Bun.write(`${output}/${photoPath(project, index)}index.html`, page(`${project.title} / ${photo.title}`, project.artist_statement, `
-      <a class="back" href="${galleryUrl}">← Projects</a>
+      <a class="back" href="${galleryUrl}">← projects</a>
       <h1 class="project-title">${escape(project.title)}</h1>
       <p class="statement">${escape(project.artist_statement)}</p>
-      <nav class="photo-navigation" aria-label="Collection navigation">
-        ${arrow('Previous photo', '←', previous)}
+      <nav class="photo-navigation" aria-label="collection navigation">
+        ${arrow('previous photo', '←', previous)}
         <span>${index + 1}/${project.photos.length}</span>
-        ${arrow('Next photo', '→', next)}
+        ${arrow('next photo', '→', next)}
       </nav>
       <figure>${image(photo)}${caption(photo)}</figure>
     `));
