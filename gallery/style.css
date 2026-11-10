@@ -1,0 +1,141 @@
+@font-face {
+  font-family: 'Computer Modern';
+  src: url('./fonts/cmunrm.woff2') format('woff2');
+  font-weight: 400;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Computer Modern';
+  src: url('./fonts/cmunbx.woff2') format('woff2');
+  font-weight: 700;
+  font-display: swap;
+}
+
+:root {
+  font-family: 'Computer Modern', 'Times New Roman', Times, serif;
+  color: #000;
+  background: #fff;
+  line-height: 1.5;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  max-width: 62rem;
+  margin: 0 auto;
+  padding: clamp(1rem, 4vw, 2rem);
+}
+
+header {
+  margin-bottom: clamp(2rem, 5vw, 3rem);
+  font-size: 1.5rem;
+  font-weight: 700;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+a:focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: 4px;
+}
+
+h1, h2, p, figure {
+  margin: 0;
+}
+
+.project-title {
+  font-size: 1.5rem;
+  line-height: 1.25;
+}
+
+.statement {
+  max-width: 65ch;
+  margin: 0.5rem 0 1rem;
+  white-space: pre-line;
+}
+
+.projects {
+  display: grid;
+  gap: clamp(2rem, 6vw, 4rem);
+}
+
+.preview {
+  display: block;
+}
+
+.view-collection {
+  display: inline-block;
+  margin-bottom: 1rem;
+  font-weight: 700;
+}
+
+.photo-navigation {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 0.75rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.photo-navigation > a,
+.photo-navigation > span[aria-hidden] {
+  display: grid;
+  place-items: center;
+  min-width: 44px;
+  min-height: 44px;
+  font-family: system-ui, sans-serif;
+}
+
+.photo-navigation > span[aria-hidden] {
+  opacity: 0.35;
+}
+
+img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.preview img {
+  max-height: 32rem;
+  object-fit: cover;
+}
+
+figure img {
+  width: auto;
+  max-width: 100%;
+  max-height: 48rem;
+}
+
+figcaption {
+  margin-top: 0.5rem;
+}
+
+figcaption h2 {
+  font-size: 1.125rem;
+}
+
+figcaption p {
+  max-width: 65ch;
+  white-space: pre-line;
+}
+
+.back {
+  display: inline-block;
+  margin-bottom: 1rem;
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}

@@ -1,0 +1,38 @@
+[[projects]]
+slug = "white-sands"
+title = "White Sands"
+artist_statement = "Sample project. An exercise in looking at the last light, when the shapes of the dunes are still visible but their edges begin to disappear."
+
+[[projects.photos]]
+title = "Blue hour"
+subtitle = "White Sands, New Mexico"
+description = "The last light settles on the dunes."
+alt = "Pale dunes beneath a soft evening sky, with mountains on the horizon"
+file = "dunes-1280.webp"
+width = 1280
+height = 591
+variants = { 640 = "dunes-640.webp", 1280 = "dunes-1280.webp", 1920 = "dunes-1920.webp" }
+
+[[projects]]
+slug = "dolomites"
+title = "The Dolomites"
+artist_statement = "Sample project. Low clouds change how the mountains read. As the distance disappears, the trees and the water hold what remains of the view."
+
+[[projects.photos]]
+title = "Low cloud"
+subtitle = "Falcade, Italy"
+description = "Mist moves through the tree line."
+alt = "Mist drifting through a dense conifer forest on a mountain slope"
+file = "forest-1280.webp"
+width = 1280
+height = 852
+variants = { 640 = "forest-640.webp", 1280 = "forest-1280.webp", 1920 = "forest-1920.webp" }
+
+[[projects.photos]]
+title = "Still water"
+subtitle = "Dolomites, Italy"
+alt = "A dark lake reflecting evergreen trees and cloud-covered peaks"
+file = "lake-1280.webp"
+width = 1280
+height = 1920
+variants = { 640 = "lake-640.webp", 1280 = "lake-1280.webp", 1920 = "lake-1920.webp" }

@@ -17,6 +17,9 @@ const App = () => {
 					<div className="my-4">
 						<h2 className="text-2xl font-bold">links</h2>
 						<ul>
+						<li className="wrap-break-words">
+							<a href="/gallery/">gallery</a>
+						</li>
 							<li className="wrap-break-words">
 								<a href="https://github.com/jeofo">github</a>
 							</li>
