@@ -98,6 +98,7 @@ function arrow(label: string, symbol: string, url?: string) {
 
 await rm(output, { recursive: true, force: true });
 await Bun.write(`${output}/style.css`, Bun.file('gallery/style.css'));
+await Bun.write(`${output}/fit-photo.js`, Bun.file('gallery/fit-photo.js'));
 await cp('gallery/photos', `${output}/photos`, { recursive: true });
 for (const file of ['cmunrm.woff2', 'cmunbx.woff2', 'SIL Open Font License.txt']) {
   await Bun.write(`${output}/fonts/${file}`, Bun.file(`src/assets/fonts/cmu/${file}`));
@@ -137,6 +138,7 @@ for (const project of projects) {
       <figure class="collection-photo" style="--photo-ratio: ${photo.width / photo.height}">
         ${image(photo)}${caption(photo)}
       </figure>
+      <script type="module" src="${galleryUrl}fit-photo.js"></script>
     `));
   }
 }

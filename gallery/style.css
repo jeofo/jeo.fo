@@ -110,12 +110,13 @@ img {
 }
 
 .collection-photo {
-  width: min(100%, calc((100dvh - 2 * var(--page-gutter)) * var(--photo-ratio)));
+  width: min(100%, var(--photo-fit-width, calc((100dvh - 2 * var(--page-gutter)) * var(--photo-ratio))));
   margin-inline: auto;
 }
 
 figcaption {
   margin-top: 0.5rem;
+  overflow-wrap: anywhere;
 }
 
 figcaption h2 {
