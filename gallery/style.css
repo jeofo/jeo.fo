@@ -25,9 +25,15 @@
 }
 
 body {
-  max-width: 62rem;
-  margin: 0 auto;
-  padding: clamp(1rem, 4vw, 2rem);
+  --page-gutter: clamp(1rem, 4vw, 2rem);
+  margin: 0;
+  padding: var(--page-gutter);
+}
+
+.projects,
+.collection-intro {
+  max-width: 58rem;
+  margin-inline: auto;
 }
 
 a {
@@ -73,6 +79,7 @@ h1, h2, p, figure {
 .photo-navigation {
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: 0.75rem;
   margin-bottom: 0.75rem;
   font-variant-numeric: tabular-nums;
@@ -102,10 +109,9 @@ img {
   object-fit: cover;
 }
 
-figure img {
-  width: auto;
-  max-width: 100%;
-  max-height: 48rem;
+.collection-photo {
+  width: min(100%, calc((100dvh - 2 * var(--page-gutter)) * var(--photo-ratio)));
+  margin-inline: auto;
 }
 
 figcaption {

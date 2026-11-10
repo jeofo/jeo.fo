@@ -70,7 +70,8 @@ function image(photo: Photo, previewTitle?: string) {
   const variants = Object.entries(photo.variants ?? {})
     .map(([width, file]) => `${galleryUrl}photos/${escape(file)} ${escape(width)}w`)
     .join(', ');
-  const responsive = variants ? ` srcset="${variants}" sizes="auto, (max-width: 62rem) 92vw, 58rem"` : '';
+  const sizes = previewTitle ? 'auto, (max-width: 62rem) 92vw, 58rem' : 'auto, 100vw';
+  const responsive = variants ? ` srcset="${variants}" sizes="${sizes}"` : '';
   const alt = previewTitle ? `view ${previewTitle}` : photo.alt ?? photo.title;
 
   return `<img src="${galleryUrl}photos/${escape(photo.file)}"${responsive} alt="${escape(alt)}" width="${photo.width}" height="${photo.height}" loading="lazy" decoding="async">`;
@@ -123,15 +124,19 @@ for (const project of projects) {
     const next = index + 1 < project.photos.length ? `${galleryUrl}${photoPath(project, index + 1)}` : undefined;
 
     await Bun.write(`${output}/${photoPath(project, index)}index.html`, page(`${project.title} / ${photo.title}`, project.artist_statement, `
-      <a class="back" href="${galleryUrl}">← projects</a>
-      <h1 class="project-title">${escape(project.title)}</h1>
-      <p class="statement">${escape(project.artist_statement)}</p>
+      <div class="collection-intro">
+        <a class="back" href="${galleryUrl}">← projects</a>
+        <h1 class="project-title">${escape(project.title)}</h1>
+        <p class="statement">${escape(project.artist_statement)}</p>
+      </div>
       <nav class="photo-navigation" aria-label="collection navigation">
         ${arrow('previous photo', '←', previous)}
         <span>${index + 1}/${project.photos.length}</span>
         ${arrow('next photo', '→', next)}
       </nav>
-      <figure>${image(photo)}${caption(photo)}</figure>
+      <figure class="collection-photo" style="--photo-ratio: ${photo.width / photo.height}">
+        ${image(photo)}${caption(photo)}
+      </figure>
     `));
   }
 }
