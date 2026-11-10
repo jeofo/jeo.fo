@@ -84,6 +84,10 @@ h1, h2, p, figure {
   margin-top: 0.35rem;
 }
 
+.gallery-index li:first-child + li {
+  margin-top: 0.85rem;
+}
+
 .singles-grid {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));

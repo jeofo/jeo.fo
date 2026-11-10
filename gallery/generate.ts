@@ -153,17 +153,17 @@ await Bun.write(`${output}/index.html`, page('gallery/jefferson ding', 'photogra
   <div class="gallery-layout">
     <nav class="gallery-index" aria-label="gallery index">
       <ul>
-        ${projects.map(project => `<li><a href="#project-${project.slug}">${escape(project.title)}</a></li>`).join('\n')}
         <li><a href="#singles">singles</a></li>
+        ${projects.map(project => `<li><a href="#project-${project.slug}">${escape(project.title)}</a></li>`).join('\n')}
       </ul>
     </nav>
     <div class="projects">
-      ${index}
       <section id="singles">
         <h2 class="project-title">singles</h2>
         ${singleGrid(singles.slice(0, 6))}
         <a class="view-more" href="${singlesUrl}" aria-label="view more singles">view more</a>
       </section>
+      ${index}
     </div>
   </div>
 `));
