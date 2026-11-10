@@ -2,6 +2,7 @@ import { cp, rm } from 'node:fs/promises';
 
 const output = 'public/gallery';
 const galleryUrl = '/gallery/';
+const singlesUrl = `${galleryUrl}singles/`;
 
 type Photo = {
   title: string;
@@ -21,8 +22,11 @@ type Project = {
   photos: [Photo, ...Photo[]];
 };
 
-const { projects } = Bun.TOML.parse(await Bun.file('gallery/projects.toml').text()) as {
-  projects: Project[];
+type Single = Photo & { slug: string };
+
+const { projects = [], singles = [] } = Bun.TOML.parse(await Bun.file('gallery/projects.toml').text()) as {
+  projects?: Project[];
+  singles?: Single[];
 };
 
 const slugs = new Set<string>();
@@ -34,12 +38,20 @@ for (const project of projects) {
     throw new Error(`Add at least one photo to ${project.slug}`);
   }
   slugs.add(project.slug);
+}
 
-  for (const photo of project.photos) {
-    for (const file of [photo.file, ...Object.values(photo.variants ?? {})]) {
-      if (!/^[\w.-]+$/.test(file) || !await Bun.file(`gallery/photos/${file}`).exists()) {
-        throw new Error(`Missing photo for ${project.slug}: ${file}`);
-      }
+const singleSlugs = new Set<string>();
+for (const photo of singles) {
+  if (!/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(photo.slug) || singleSlugs.has(photo.slug)) {
+    throw new Error(`Invalid or duplicate single photo slug: ${photo.slug}`);
+  }
+  singleSlugs.add(photo.slug);
+}
+
+for (const photo of [...projects.flatMap(project => project.photos), ...singles]) {
+  for (const file of [photo.file, ...Object.values(photo.variants ?? {})]) {
+    if (!/^[\w.-]+$/.test(file) || !await Bun.file(`gallery/photos/${file}`).exists()) {
+      throw new Error(`Missing photo for ${photo.title}: ${file}`);
     }
   }
 }
@@ -54,6 +66,7 @@ function page(title: string, description: string, content: string) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="description" content="${escape(description)}">
+    <link rel="icon" type="image/png" href="/avatartion.png">
     <title>${escape(title.toLowerCase())}</title>
     <link rel="stylesheet" href="${galleryUrl}style.css">
   </head>
@@ -66,13 +79,11 @@ function page(title: string, description: string, content: string) {
 `;
 }
 
-function image(photo: Photo, previewTitle?: string) {
+function image(photo: Photo, sizes: string, alt = photo.alt ?? photo.title) {
   const variants = Object.entries(photo.variants ?? {})
     .map(([width, file]) => `${galleryUrl}photos/${escape(file)} ${escape(width)}w`)
     .join(', ');
-  const sizes = previewTitle ? 'auto, (max-width: 62rem) 92vw, 58rem' : 'auto, 100vw';
   const responsive = variants ? ` srcset="${variants}" sizes="${sizes}"` : '';
-  const alt = previewTitle ? `view ${previewTitle}` : photo.alt ?? photo.title;
 
   return `<img src="${galleryUrl}photos/${escape(photo.file)}"${responsive} alt="${escape(alt)}" width="${photo.width}" height="${photo.height}" loading="lazy" decoding="async">`;
 }
@@ -96,6 +107,29 @@ function arrow(label: string, symbol: string, url?: string) {
     : `<span aria-hidden="true">${symbol}</span>`;
 }
 
+function photoViewer(photo: Photo, index: number, urls: string[]) {
+  return `<nav class="photo-navigation" aria-label="photo navigation">
+    ${arrow('previous photo', '←', urls[index - 1])}
+    <span>${index + 1}/${urls.length}</span>
+    ${arrow('next photo', '→', urls[index + 1])}
+  </nav>
+  <figure class="collection-photo" style="--photo-ratio: ${photo.width / photo.height}">
+    ${image(photo, 'auto, 100vw')}${caption(photo)}
+  </figure>
+  <script type="module" src="${galleryUrl}fit-photo.js"></script>`;
+}
+
+function singleGrid(photos: Single[]) {
+  if (!photos.length) return '<p>no singles yet.</p>';
+
+  return `<ul class="singles-grid">${photos.map(photo => `<li>
+    <a href="${singlesUrl}${photo.slug}/">
+      ${image(photo, 'auto, (max-width: 32rem) 45vw, 33vw', '')}
+      <span>${escape(photo.title)}</span>
+    </a>
+  </li>`).join('\n')}</ul>`;
+}
+
 await rm(output, { recursive: true, force: true });
 await Bun.write(`${output}/style.css`, Bun.file('gallery/style.css'));
 await Bun.write(`${output}/fit-photo.js`, Bun.file('gallery/fit-photo.js'));
@@ -106,39 +140,63 @@ for (const file of ['cmunrm.woff2', 'cmunbx.woff2', 'SIL Open Font License.txt']
 
 const index = projects.map(project => {
   const url = `${galleryUrl}${photoPath(project, 0)}`;
-  return `<article>
+  return `<article id="project-${project.slug}">
     <h2 class="project-title"><a href="${url}">${escape(project.title)}</a></h2>
     <p class="statement">${escape(project.artist_statement)}</p>
     <a class="view-collection" href="${url}" aria-label="view ${escape(project.title)}">view</a>
-    <a class="preview" href="${url}">${image(project.photos[0], project.title)}</a>
+    <a class="preview" href="${url}">${image(project.photos[0], 'auto, (max-width: 62rem) 92vw, 58rem', `view ${project.title}`)}</a>
   </article>`;
 }).join('\n');
 
-await Bun.write(`${output}/index.html`, page('photography', 'photography projects', `
-  <h1 class="visually-hidden">photography projects</h1>
-  <div class="projects">${index}</div>
+await Bun.write(`${output}/index.html`, page('gallery/jefferson ding', 'photography projects and singles', `
+  <h1 class="visually-hidden">photography</h1>
+  <div class="gallery-layout">
+    <nav class="gallery-index" aria-label="gallery index">
+      <ul>
+        ${projects.map(project => `<li><a href="#project-${project.slug}">${escape(project.title)}</a></li>`).join('\n')}
+        <li><a href="#singles">singles</a></li>
+      </ul>
+    </nav>
+    <div class="projects">
+      ${index}
+      <section id="singles">
+        <h2 class="project-title">singles</h2>
+        ${singleGrid(singles.slice(0, 6))}
+        <a class="view-more" href="${singlesUrl}" aria-label="view more singles">view more</a>
+      </section>
+    </div>
+  </div>
 `));
 
-for (const project of projects) {
-  for (const [index, photo] of project.photos.entries()) {
-    const previous = index > 0 ? `${galleryUrl}${photoPath(project, index - 1)}` : undefined;
-    const next = index + 1 < project.photos.length ? `${galleryUrl}${photoPath(project, index + 1)}` : undefined;
+await Bun.write(`${output}/singles/index.html`, page('singles', 'standalone photographs', `
+  <section class="singles-page">
+    <a class="back" href="${galleryUrl}">← gallery</a>
+    <h1 class="project-title">singles</h1>
+    ${singleGrid(singles)}
+  </section>
+`));
 
+const singleUrls = singles.map(photo => `${singlesUrl}${photo.slug}/`);
+for (const [index, photo] of singles.entries()) {
+  await Bun.write(`${output}/singles/${photo.slug}/index.html`, page(photo.title, photo.description ?? 'standalone photograph', `
+    <div class="collection-intro">
+      <a class="back" href="${singlesUrl}">← singles</a>
+      <h1 class="visually-hidden">${escape(photo.title)}</h1>
+    </div>
+    ${photoViewer(photo, index, singleUrls)}
+  `));
+}
+
+for (const project of projects) {
+  const urls = project.photos.map((_, index) => `${galleryUrl}${photoPath(project, index)}`);
+  for (const [index, photo] of project.photos.entries()) {
     await Bun.write(`${output}/${photoPath(project, index)}index.html`, page(`${project.title} / ${photo.title}`, project.artist_statement, `
       <div class="collection-intro">
         <a class="back" href="${galleryUrl}">← projects</a>
         <h1 class="project-title">${escape(project.title)}</h1>
         <p class="statement">${escape(project.artist_statement)}</p>
       </div>
-      <nav class="photo-navigation" aria-label="collection navigation">
-        ${arrow('previous photo', '←', previous)}
-        <span>${index + 1}/${project.photos.length}</span>
-        ${arrow('next photo', '→', next)}
-      </nav>
-      <figure class="collection-photo" style="--photo-ratio: ${photo.width / photo.height}">
-        ${image(photo)}${caption(photo)}
-      </figure>
-      <script type="module" src="${galleryUrl}fit-photo.js"></script>
+      ${photoViewer(photo, index, urls)}
     `));
   }
 }
